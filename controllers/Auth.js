@@ -75,7 +75,8 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.invalid',
-            message: 'Email does not exist.',
+            message: 'We can’t find an account with this username or email address',
+            field: 'identifier'
           })
         );
       }
@@ -124,7 +125,8 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.invalid',
-            message: 'Incorrect Password, Please try again.',
+            message: 'This password is incorrect, please try again',
+            field: 'password'
           })
         );
       } else {
@@ -480,7 +482,8 @@ module.exports = {
         null,
         formatError({
           id: 'Auth.form.error.email.taken',
-          message: 'Email is already taken.',
+          message: 'There is an existing account associated with this email address',
+          field: 'email'
         })
       );
     }
@@ -490,7 +493,23 @@ module.exports = {
         null,
         formatError({
           id: 'Auth.form.error.email.taken',
-          message: 'Email is already taken.',
+          message: 'There is an existing account associated with this email address',
+          field: 'email'
+        })
+      );
+    }
+
+    const userObj = await strapi.query('user', 'users-permissions').findOne({
+      username: params.username,
+    });
+
+    if (userObj && userObj.provider === params.provider) {
+      return ctx.badRequest(
+        null,
+        formatError({
+          id: 'Auth.form.error.email.taken',
+          message: 'This username is not available',
+          field: 'username'
         })
       );
     }
@@ -526,9 +545,14 @@ module.exports = {
       const adminError = _.includes(err.message, 'username')
         ? {
             id: 'Auth.form.error.username.taken',
-            message: 'Username already taken',
+            message: 'This username is not available',
+            field: 'username'
           }
-        : { id: 'Auth.form.error.email.taken', message: 'Email already taken' };
+        : {
+          id: 'Auth.form.error.email.taken',
+          message: 'There is an existing account associated with this email address',
+          field: 'email'
+        };
 
       ctx.badRequest(null, formatError(adminError));
     }
