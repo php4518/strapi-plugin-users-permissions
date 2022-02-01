@@ -277,29 +277,28 @@ module.exports = {
 
     // Check if the provided email is valid or not.
     const isEmail = emailRegExp.test(email);
+    email = email.toLowerCase();
+    let user;
 
     if (isEmail) {
-      email = email.toLowerCase();
+      // Find the user by email.
+      user = await strapi
+        .query('user', 'users-permissions')
+        .findOne({ email });
+    } else if (email) {
+      // Find the user by username.
+      user = await strapi
+        .query('user', 'users-permissions')
+        .findOne({ username: email });
     } else {
       return ctx.badRequest(
         null,
         formatError({
           id: 'Auth.form.error.email.format',
-          message: 'Please provide a valid email address.',
+          message: 'Please provide a valid email address or username.',
         })
       );
     }
-
-    const pluginStore = await strapi.store({
-      environment: '',
-      type: 'plugin',
-      name: 'users-permissions',
-    });
-
-    // Find the user by email.
-    const user = await strapi
-      .query('user', 'users-permissions')
-      .findOne({ email: email.toLowerCase() });
 
     // User not found.
     if (!user) {
@@ -307,7 +306,8 @@ module.exports = {
         null,
         formatError({
           id: 'Auth.form.error.user.not-exist',
-          message: 'This email does not exist.',
+          message: "We can't find an account with this username or email address",
+          field: 'identifier'
         })
       );
     }
@@ -323,6 +323,11 @@ module.exports = {
       );
     }
 
+    const pluginStore = await strapi.store({
+      environment: '',
+      type: 'plugin',
+      name: 'users-permissions',
+    });
     // Generate random token.
     const resetPasswordToken = crypto.randomBytes(64).toString('hex');
 
