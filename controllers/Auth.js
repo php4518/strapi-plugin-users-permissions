@@ -307,7 +307,7 @@ module.exports = {
         formatError({
           id: 'Auth.form.error.user.not-exist',
           message: "We can't find an account with this username or email address",
-          field: 'identifier'
+          field: 'email'
         })
       );
     }
