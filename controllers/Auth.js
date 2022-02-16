@@ -195,7 +195,7 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.code.provide',
-            message: 'Incorrect code provided.',
+            message: 'Your reset link is incorrect or expired. Please try again.',
           })
         );
       }
