@@ -42,9 +42,9 @@ module.exports = {
         null,
         formatError({
           id: 'Auth.form.error.username.taken',
-          message: 'Username already taken.',
-          field: ['username'],
-        })
+          message: 'This username is not available',
+          field: 'username'
+      })
       );
     }
 
@@ -59,8 +59,8 @@ module.exports = {
 
           formatError({
             id: 'Auth.form.error.email.taken',
-            message: 'Email already taken.',
-            field: ['email'],
+            message: 'There is an existing account associated with this email address',
+            field: 'email'
           })
         );
       }
@@ -133,8 +133,8 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.username.taken',
-            message: 'username.alreadyTaken.',
-            field: ['username'],
+            message: 'This username is not available',
+            field: 'username'
           })
         );
       }
@@ -150,8 +150,8 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.email.taken',
-            message: 'Email already taken',
-            field: ['email'],
+            message: 'There is an existing account associated with this email address',
+            field: 'email'
           })
         );
       }
