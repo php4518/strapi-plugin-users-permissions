@@ -16,6 +16,7 @@ const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 const formatError = error => [
   { messages: [{ id: error.id, message: error.message, field: error.field }] },
 ];
+const ACCOUNT_NOT_FOUND = "We can't find an account with this username or email address";
 
 module.exports = {
   async callback(ctx) {
@@ -75,7 +76,7 @@ module.exports = {
           null,
           formatError({
             id: 'Auth.form.error.invalid',
-            message: 'We can’t find an account with this username or email address',
+            message: ACCOUNT_NOT_FOUND,
             field: 'identifier'
           })
         );
@@ -100,6 +101,17 @@ module.exports = {
           formatError({
             id: 'Auth.form.error.blocked',
             message: 'Your account has been blocked by an administrator',
+          })
+        );
+      }
+
+      if (user.isDeleted) {
+        return ctx.badRequest(
+          null,
+          formatError({
+            id: 'Auth.form.error.deleted',
+            message: ACCOUNT_NOT_FOUND,
+            field: 'identifier'
           })
         );
       }
@@ -306,7 +318,7 @@ module.exports = {
         null,
         formatError({
           id: 'Auth.form.error.user.not-exist',
-          message: "We can't find an account with this username or email address",
+          message: ACCOUNT_NOT_FOUND,
           field: 'email'
         })
       );
@@ -323,6 +335,17 @@ module.exports = {
       );
     }
 
+    // User deleted
+    if (user.isDeleted) {
+      return ctx.badRequest(
+        null,
+        formatError({
+          id: 'Auth.form.error.deleted',
+          message: ACCOUNT_NOT_FOUND,
+          field: 'identifier'
+        })
+      );
+    }
     const pluginStore = await strapi.store({
       environment: '',
       type: 'plugin',
@@ -628,6 +651,9 @@ module.exports = {
       return ctx.badRequest('blocked.user');
     }
 
+    if (user.isDeleted) {
+      return ctx.badRequest('blocked.user');
+    }
     try {
       await strapi.plugins['users-permissions'].services.user.sendConfirmationEmail(user);
       ctx.send({
