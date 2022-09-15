@@ -374,7 +374,7 @@ module.exports = {
       settings.message,
       {
         URL: advanced.email_reset_password,
-        USER: userInfo,
+        USER: userInfo.firstName,
         TOKEN: resetPasswordToken,
       }
     );
