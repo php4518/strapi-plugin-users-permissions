@@ -406,7 +406,7 @@ module.exports = {
     // Update the user.
     await strapi.query('user', 'users-permissions').update({ id: user.id }, { resetPasswordToken });
 
-    ctx.send({ ok: true });
+    ctx.send({ ok: true, userId: user.id });
   },
 
   async register(ctx) {
